@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f6fa">
+  <title>Agenda Estudiantil</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="encabezado">
+    <div>
+      <p class="etiqueta">AGENDA COMPARTIDA</p>
+      <h1>Agenda Estudiantil</h1>
+      <p class="subtitulo">Todo el curso, organizado en un solo lugar.</p>
+    </div>
+  </header>
+
+  <main class="contenedor">
+    <section class="bienvenida">
+      <div>
+        <p class="etiqueta">TU CURSO</p>
+        <h2>Próximas actividades</h2>
+        <p>Consultá las evaluaciones y los trabajos prácticos.</p>
+      </div>
+      <div class="calendario-icono" aria-hidden="true">▦</div>
+    </section>
+
+    <section class="resumen" aria-label="Resumen de actividades">
+      <article class="tarjeta-resumen">
+        <span>Total de actividades</span>
+        <strong id="total-actividades">0</strong>
+      </article>
+      <article class="tarjeta-resumen">
+        <span>Próximas evaluaciones</span>
+        <strong id="total-evaluaciones">0</strong>
+      </article>
+      <article class="tarjeta-resumen">
+        <span>Trabajos prácticos</span>
+        <strong id="total-tp">0</strong>
+      </article>
+    </section>
+
+    <section class="seccion-agenda">
+      <div class="titulo-seccion">
+        <div>
+          <p class="etiqueta">ORGANIZACIÓN</p>
+          <h2>Agenda del curso</h2>
+        </div>
+        <button id="mostrar-formulario" type="button">
+          + Proponer actividad
+        </button>
+      </div>
+
+      <form id="formulario-actividad" class="formulario oculto">
+        <h3>Proponer una actividad</h3>
+
+        <label for="materia">Materia</label>
+        <select id="materia" required>
+          <option value="">Elegí una materia</option>
+          <option>Historia</option>
+          <option>Geografía</option>
+          <option>Filosofía</option>
+          <option>Economía</option>
+          <option>Literatura</option>
+          <option>Matemática</option>
+          <option>Inglés</option>
+          <option>Biología</option>
+          <option>Química</option>
+          <option>Física</option>
+          <option>Otra</option>
+        </select>
+
+        <label for="tipo">Tipo de actividad</label>
+        <select id="tipo" required>
+          <option value="">Elegí el tipo</option>
+          <option value="Evaluación">Evaluación</option>
+          <option value="Trabajo práctico">Trabajo práctico</option>
+          <option value="Entrega">Entrega</option>
+        </select>
+
+        <label for="titulo">Nombre o tema</label>
+        <input id="titulo" type="text" maxlength="100"
+          placeholder="Ej.: Revolución Industrial" required>
+
+        <label for="fecha">Fecha propuesta</label>
+        <input id="fecha" type="date" required>
+
+        <div class="acciones-formulario">
+          <button type="submit">Guardar propuesta</button>
+          <button id="cancelar-formulario" type="button"
+            class="boton-secundario">Cancelar</button>
+        </div>
+        <p class="nota">
+          Esta primera versión es una maqueta. Todavía no guarda datos
+          compartidos entre alumnos.
+        </p>
+      </form>
+
+      <div id="lista-actividades" class="lista-actividades">
+        <div class="estado-vacio">
+          <span aria-hidden="true">▤</span>
+          <h3>La agenda está lista para empezar</h3>
+          <p>Cuando carguemos las primeras actividades, aparecerán acá.</p>
+        </div>
+      </div>
+    </section>
+
+    <p class="pie">Agenda Estudiantil Colaborativa · Versión inicial</p>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

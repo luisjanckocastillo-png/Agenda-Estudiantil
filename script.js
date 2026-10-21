@@ -270,7 +270,10 @@ async function autenticar(registrar) {
     if (registrar) {
       resultado = await supabaseClient.auth.signUp({
         email,
-        password
+        password,
+        options: {
+          emailRedirectTo: "https://f94adcbf.agenda-estudiantil.pages.dev/"
+        }
       });
     } else {
       resultado = await supabaseClient.auth.signInWithPassword({

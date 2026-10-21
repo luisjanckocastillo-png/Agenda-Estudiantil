@@ -1,16 +1,19 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#f5f6fa">
+  <meta name="theme-color" content="#f5f7fb">
+  <meta name="description" content="Tablón colaborativo de pruebas, evaluaciones y trabajos prácticos del curso.">
   <title>Agenda Estudiantil</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="script.js" defer></script>
 </head>
 <body>
   <header class="encabezado">
-    <div>
+    <div class="encabezado-interior">
       <p class="etiqueta">AGENDA COMPARTIDA</p>
       <h1>Agenda Estudiantil</h1>
       <p class="subtitulo">Todo el curso, organizado en un solo lugar.</p>
@@ -21,8 +24,8 @@
     <section class="bienvenida">
       <div>
         <p class="etiqueta">TU CURSO</p>
-        <h2>Próximas actividades</h2>
-        <p>Consultá las evaluaciones y los trabajos prácticos.</p>
+        <h2>El tablón del curso</h2>
+        <p>Enterate de las pruebas, evaluaciones y trabajos prácticos que publican tus compañeros.</p>
       </div>
       <div class="calendario-icono" aria-hidden="true">▦</div>
     </section>
@@ -31,8 +34,8 @@
       <div class="acceso-cabecera">
         <div>
           <p class="etiqueta">CUENTA</p>
-          <h2 id="titulo-acceso">Ingresá para participar</h2>
-          <p id="texto-acceso">Podés consultar la agenda sin ingresar. Para proponer actividades o votar, necesitás una cuenta.</p>
+          <h2 id="titulo-acceso">Ingresá para publicar</h2>
+          <p id="texto-acceso">Podés consultar los anuncios sin ingresar. Para publicar, proponer fechas o votar, necesitás una cuenta.</p>
         </div>
         <button id="boton-salir" type="button" class="boton-secundario oculto">Cerrar sesión</button>
       </div>
@@ -51,16 +54,17 @@
           </div>
         </form>
       </div>
+
       <p id="mensaje-global" class="mensaje" role="status" aria-live="polite"></p>
     </section>
 
-    <section class="resumen" aria-label="Resumen de actividades">
+    <section class="resumen" aria-label="Resumen de publicaciones">
       <article class="tarjeta-resumen">
-        <span>Total de actividades</span>
+        <span>Total de anuncios</span>
         <strong id="total-actividades">0</strong>
       </article>
       <article class="tarjeta-resumen">
-        <span>Próximas pruebas</span>
+        <span>Pruebas y evaluaciones</span>
         <strong id="total-evaluaciones">0</strong>
       </article>
       <article class="tarjeta-resumen">
@@ -72,17 +76,42 @@
     <section class="seccion-agenda">
       <div class="titulo-seccion">
         <div>
-          <p class="etiqueta">ORGANIZACIÓN</p>
-          <h2>Agenda del curso</h2>
+          <p class="etiqueta">TABLÓN COLABORATIVO</p>
+          <h2>Anuncios del curso</h2>
+          <p class="texto-ayuda">Buscá por materia o tipo de actividad.</p>
         </div>
         <div class="acciones-agenda">
           <button id="boton-actualizar" type="button" class="boton-secundario">Actualizar</button>
-          <button id="mostrar-formulario" type="button" disabled>+ Proponer actividad</button>
+          <button id="mostrar-formulario" type="button" disabled>+ Publicar anuncio</button>
+        </div>
+      </div>
+
+      <div class="filtros">
+        <div class="campo-filtro">
+          <label for="busqueda">Buscar</label>
+          <input id="busqueda" type="search" placeholder="Ej.: Revolución Industrial">
+        </div>
+
+        <div class="campo-filtro">
+          <label for="filtro-materia">Materia</label>
+          <select id="filtro-materia">
+            <option value="">Todas las materias</option>
+          </select>
+        </div>
+
+        <div class="campo-filtro">
+          <label for="filtro-tipo">Tipo</label>
+          <select id="filtro-tipo">
+            <option value="">Todos los tipos</option>
+            <option value="prueba">Prueba / evaluación</option>
+            <option value="trabajo_practico">Trabajo práctico</option>
+          </select>
         </div>
       </div>
 
       <form id="formulario-actividad" class="formulario oculto">
-        <h3>Proponer una actividad</h3>
+        <h3>Publicar un anuncio</h3>
+        <p class="texto-ayuda">Elegí la materia de la lista. No escribas el nombre manualmente.</p>
 
         <label for="materia">Materia</label>
         <select id="materia" required>
@@ -96,32 +125,40 @@
           <option value="trabajo_practico">Trabajo práctico</option>
         </select>
 
-        <label for="titulo">Nombre o tema</label>
-        <input id="titulo" type="text" maxlength="100"
-          placeholder="Ej.: Revolución Industrial" required>
+        <label for="titulo">Título del anuncio</label>
+        <input
+          id="titulo"
+          type="text"
+          maxlength="120"
+          required
+          placeholder="Ej.: Prueba sobre la Revolución Industrial"
+        >
+
+        <label for="descripcion">Información del anuncio</label>
+        <textarea
+          id="descripcion"
+          rows="4"
+          maxlength="1500"
+          required
+          placeholder="Escribí los temas, páginas, materiales, consignas o cualquier información útil para tus compañeros."
+        ></textarea>
 
         <label for="fecha">Primera fecha propuesta</label>
         <input id="fecha" type="date" required>
 
         <div class="acciones-formulario">
-          <button type="submit">Guardar propuesta</button>
+          <button id="boton-guardar" type="submit">Publicar en el tablón</button>
           <button id="cancelar-formulario" type="button" class="boton-secundario">Cancelar</button>
         </div>
-        <p class="nota">Las propuestas quedan compartidas con el curso. Los compañeros pueden sugerir otras fechas y votar.</p>
+
+        <p class="nota">Antes de publicar, revisá que el anuncio no exista ya en el tablón. Si no sabés la fecha exacta, podés proponer una fecha inicial y después recibir otras propuestas.</p>
       </form>
 
-      <div id="lista-actividades" class="lista-actividades">
-        <div class="estado-vacio">
-          <span aria-hidden="true">▤</span>
-          <h3>Cargando agenda…</h3>
-          <p>Estamos buscando las actividades compartidas.</p>
-        </div>
-      </div>
+      <div id="estado-carga" class="estado-carga">Cargando anuncios…</div>
+      <div id="lista-actividades" class="lista-actividades"></div>
     </section>
 
-    <p class="pie">Agenda Estudiantil Colaborativa · Versión inicial</p>
+    <p class="pie">Agenda Estudiantil Colaborativa · Tablón del curso</p>
   </main>
-
-  <script src="script.js"></script>
 </body>
 </html>

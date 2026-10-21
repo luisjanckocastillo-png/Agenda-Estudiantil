@@ -40,6 +40,7 @@ const campoEmail = document.getElementById("email");
 const campoContrasena = document.getElementById("contrasena");
 
 const campoMateria = document.getElementById("materia");
+const selectorMaterias = document.getElementById("selector-materias");
 const campoTipo = document.getElementById("tipo");
 const campoTitulo = document.getElementById("titulo");
 const campoDescripcion = document.getElementById("descripcion");
@@ -327,20 +328,37 @@ async function cargarMaterias() {
     );
   }
 
-  // El formulario de publicación usa exclusivamente
-  // las materias existentes en la tabla materias.
-  campoMateria.replaceChildren();
-  campoMateria.append(
-    new Option("Elegí una materia", "")
-  );
+  // El alumno elige tocando una tarjeta. El identificador se guarda
+  // en un campo oculto y nunca se escribe manualmente.
+  campoMateria.value = "";
+  selectorMaterias.replaceChildren();
+
+  if (materias.length === 0) {
+    selectorMaterias.append(
+      crearElemento("p", "texto-ayuda", "No hay materias disponibles. Probá actualizar.")
+    );
+  }
 
   materias.forEach((materia) => {
-    campoMateria.append(
-      new Option(materia.nombre, materia.id)
-    );
+    const botonMateria = crearElemento("button", "materia-opcion", materia.nombre);
+    botonMateria.type = "button";
+    botonMateria.dataset.materiaId = materia.id;
+    botonMateria.setAttribute("aria-pressed", "false");
+    botonMateria.addEventListener("click", () => {
+      campoMateria.value = materia.id;
+
+      selectorMaterias.querySelectorAll(".materia-opcion").forEach((opcion) => {
+        const seleccionada = opcion === botonMateria;
+        opcion.classList.toggle("seleccionada", seleccionada);
+        opcion.setAttribute("aria-pressed", String(seleccionada));
+      });
+
+      mostrarMensaje("Materia seleccionada: " + materia.nombre, "success");
+    });
+    selectorMaterias.append(botonMateria);
   });
 
-  // El filtro usa las mismas materias.
+  // El filtro de la agenda usa la misma lista fija.
   filtroMateria.replaceChildren();
   filtroMateria.append(
     new Option("Todas las materias", "")
@@ -719,11 +737,17 @@ function mostrarFormulario() {
   }
 
   formulario.classList.remove("oculto");
-  campoMateria.focus();
+  const primeraMateria = selectorMaterias.querySelector(".materia-opcion");
+  if (primeraMateria) primeraMateria.focus();
 }
 
 function ocultarFormulario() {
   formulario.reset();
+  campoMateria.value = "";
+  selectorMaterias.querySelectorAll(".materia-opcion").forEach((opcion) => {
+    opcion.classList.remove("seleccionada");
+    opcion.setAttribute("aria-pressed", "false");
+  });
   campoFecha.min = fechaLocalISO();
   formulario.classList.add("oculto");
 }
@@ -782,6 +806,11 @@ async function publicarActividad(evento) {
   // y para el mismo tipo de actividad.
   const nuevaClave = claveActividad(titulo);
 
+  if (!nuevaClave) {
+    mostrarMensaje("El título tiene que incluir palabras que identifiquen la actividad.", "error");
+    return;
+  }
+
   const duplicada = actividades.some((actividad) => {
     if (
       actividad.materia_id !== materiaId ||
@@ -812,6 +841,7 @@ async function publicarActividad(evento) {
           materia_id: materiaId,
           tipo,
           titulo,
+          titulo_normalizado: nuevaClave,
           descripcion,
           creada_por: usuarioActual.id
         })
